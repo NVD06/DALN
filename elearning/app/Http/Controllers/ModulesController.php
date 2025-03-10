@@ -105,4 +105,5 @@ class ModulesController extends Controller
 
         return redirect()->route('mentor.show', $module->course_id)->with('success', 'Module đã được cập nhật!');
     }
+    
 }
