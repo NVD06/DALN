@@ -35,26 +35,24 @@ class StudentController extends Controller
     {
         $userId = Auth::id();
     
-        // Kiểm tra xem đã thanh toán hay chưa
+        // Kiểm tra xem đã thanh toán chưa
         $payment = CourseUser::where('user_id', $userId)
                              ->where('course_id', $id)
                              ->first();
     
-        if ($payment && !$payment->paid) {
-            return redirect()->route('courses.payment', $id)->with('error', 'Bạn cần thanh toán trước khi đăng ký học.');
-        }
-    
         if (!$payment) {
+            // Nếu chưa có bản ghi, tạo bản ghi với trạng thái chưa thanh toán
             CourseUser::create([
                 'user_id' => $userId,
                 'course_id' => $id,
                 'paid' => false // Chưa thanh toán
             ]);
-            return redirect()->route('courses.payment', $id)->with('error', 'Bạn cần thanh toán trước khi đăng ký học.');
         }
     
-        return redirect()->route('courses.index')->with('success', 'Đã đăng ký khóa học thành công!');
+        // Chuyển hướng đến trang thanh toán thay vì đăng ký thành công
+        return redirect()->route('courses.payment', $id);
     }
+    
     public function showPaymentForm($id)
     {
         $course = Course::findOrFail($id);
@@ -64,26 +62,27 @@ class StudentController extends Controller
     {
         $userId = Auth::id();
         $course = Course::findOrFail($id);
-    
-        // Kiểm tra nếu khóa học đã được thanh toán
-        $courseUser = CourseUser::where('user_id', $userId)->where('course_id', $id)->first();
-    
-        if (!$courseUser) {
-            return redirect()->route('courses.index')->with('error', 'Không tìm thấy khóa học!');
-        }
-    
-        // Giả lập thanh toán thành công (ở thực tế có thể tích hợp cổng thanh toán VNPay, Momo, PayPal)
+        
+        // Lấy bản ghi CourseUser nếu tồn tại, nếu không thì tạo mới
+        $courseUser = CourseUser::firstOrNew([
+            'user_id'   => $userId,
+            'course_id' => $id
+        ]);
+        
+        // Giả lập thanh toán thành công
         $paymentSuccess = true;
-    
+        
         if ($paymentSuccess) {
-            $courseUser->update(['paid' => true]);
-    
+            // Cập nhật trạng thái thanh toán thành công
+            $courseUser->paid = true;
+            $courseUser->save();
+            
             return redirect()->route('courses.index')->with('success', 'Thanh toán thành công! Bạn đã đăng ký khóa học.');
         }
-    
+        
         return redirect()->route('courses.payment', $id)->with('error', 'Thanh toán thất bại, vui lòng thử lại.');
     }
-            
+    
     // Học khóa học - hiển thị danh sách modules và trạng thái hoàn thành
     public function learn($courseId)
     {

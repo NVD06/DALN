@@ -63,3 +63,4 @@ Route::get('/tests/{test}/edit', [TestController::class, 'edit'])->name('tests.e
 Route::put('/tests/{test}', [TestController::class, 'update'])->name('tests.update');
 Route::post('/courses/{course}/test/{test}/submit', [TestController::class, 'submit'])
     ->name('courses.test.submit');
+

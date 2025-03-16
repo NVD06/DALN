@@ -1,60 +1,57 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <!-- Hiển thị thông báo -->
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-    
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+<div class="container">
+    @if (session('score'))
+        <!-- Hiển thị điểm nếu có -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Debug: in ra console để xác nhận script được chạy
+                console.log("Hiển thị kết quả bài kiểm tra");
+
+                Swal.fire({
+                    icon: "{{ session('passed') ? 'success' : 'error' }}",
+                    title: '🎉 Kết quả bài kiểm tra!',
+                    text: "Bạn đã đạt {{ session('score') }} điểm. {{ session('passed') ? 'Đạt' : 'Không đạt' }}",
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if(result.isConfirmed) {
+                        window.location.href = "{{ route('courses.index') }}"; // Chuyển hướng sau khi nhấn OK
+                    }
+                });
+            });
+        </script>
     @endif
 
-    <!-- Tiêu đề bài kiểm tra -->
-    <div class="text-center mb-4">
-        <h2 class="text-primary fw-bold">📝 {{ $test->title }}</h2>
-        <p class="text-muted">Khóa học: <strong>{{ $test->course->title }}</strong></p>
-    </div>
+    <h2 class="text-center">📝 Bài kiểm tra: {{ $test->title }}</h2>
+    <p class="text-muted">Khóa học: <strong>{{ $test->course->title }}</strong></p>
 
     @if($test->questions->isEmpty())
-        <div class="alert alert-warning text-center">⚠️ Chưa có câu hỏi nào.</div>
+        <div class="alert alert-warning">⚠️ Chưa có câu hỏi nào.</div>
     @else
-        <div class="card shadow-sm p-4">
-            <form action="{{ route('courses.test.submit', ['course' => $test->course->id, 'test' => $test->id]) }}" method="POST">
-                @csrf
+        <form action="{{ route('courses.test.submit', ['course' => $test->course->id, 'test' => $test->id]) }}" method="POST">
+            @csrf
 
-                @foreach($test->questions as $index => $question)
-                    <div class="mb-4">
-                        <h5 class="fw-bold">❓ Câu {{ $index + 1 }}: {{ $question->question }}</h5>
+            @foreach($test->questions as $index => $question)
+                <div class="mb-4">
+                    <h5>❓ Câu hỏi {{ $index + 1 }}: {{ $question->question }}</h5>
 
-                        @if($question->answers->isEmpty())
-                            <p class="text-danger">⚠️ Chưa có câu trả lời.</p>
-                        @else
-                            <div class="list-group">
-                                @foreach($question->answers as $answer)
-                                    <label class="list-group-item d-flex align-items-center">
-                                        <input type="radio" name="answers[{{ $question->id }}]" value="{{ $answer->id }}" class="form-check-input me-2" required>
-                                        {{ $answer->answer }}
-                                    </label>
-                                @endforeach
+                    @if($question->answers->isEmpty())
+                        <p class="text-danger">⚠️ Chưa có câu trả lời.</p>
+                    @else
+                        @foreach($question->answers as $answer)
+                            <div class="form-check">
+                                <input type="radio" name="answers[{{ $question->id }}]" value="{{ $answer->id }}" class="form-check-input" required>
+                                <label class="form-check-label">{{ $answer->answer }}</label>
                             </div>
-                        @endif
-                    </div>
-                @endforeach
-
-                <!-- Nút submit -->
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-lg btn-success">📤 Nộp bài</button>
+                        @endforeach
+                    @endif
                 </div>
-            </form>
-        </div>
+            @endforeach
+
+            <button type="submit" class="btn btn-success mt-3">📤 Nộp bài</button>
+        </form>
     @endif
 </div>
 @endsection
