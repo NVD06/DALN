@@ -41,28 +41,50 @@
         <button type="submit" class="btn btn-primary mt-2">💾 Lưu thay đổi</button>
     </form>
 </div>
-
 <script>
 document.getElementById('add-question').addEventListener('click', function () {
     let index = document.querySelectorAll('.question').length;
     let newQuestion = document.createElement('div');
     newQuestion.classList.add('question', 'mb-4');
+
     newQuestion.innerHTML = `
-        <input type="text" class="form-control" name="questions[\${index}][question]" placeholder="Nhập câu hỏi mới" required>
-        <div class="answers mt-2">
-            <div class="d-flex align-items-center mb-2">
-                <input type="text" class="form-control me-2" name="questions[\${index}][answers][0][text]" placeholder="Đáp án 1" required>
-                <input type="radio" name="questions[\${index}][correct_answer]" value="0">
-                <label class="ms-1">Đúng</label>
+        <!-- Nếu muốn có input hidden ID cho câu hỏi mới, bạn có thể thêm ở đây, ví dụ:
+             <input type=\"hidden\" name=\"questions[\${index}][id]\" value=\"\" /> 
+             để nhất quán với cấu trúc cũ. -->
+
+        <input type=\"text\" class=\"form-control\" 
+               name=\"questions[\${index}][question]\" 
+               placeholder=\"Nhập câu hỏi mới\" required>
+
+        <div class=\"answers mt-2\">
+            <div class=\"d-flex align-items-center mb-2\">
+                <input type=\"text\" class=\"form-control me-2\" 
+                       name=\"questions[\${index}][answers][0][text]\" 
+                       placeholder=\"Đáp án 1\" required>
+                <input type=\"radio\" name=\"questions[\${index}][correct_answer]\" value=\"0\">
+                <label class=\"ms-1\">Đúng</label>
             </div>
-            <div class="d-flex align-items-center mb-2">
-                <input type="text" class="form-control me-2" name="questions[\${index}][answers][1][text]" placeholder="Đáp án 2" required>
-                <input type="radio" name="questions[\${index}][correct_answer]" value="1">
-                <label class="ms-1">Đúng</label>
+
+            <div class=\"d-flex align-items-center mb-2\">
+                <input type=\"text\" class=\"form-control me-2\" 
+                       name=\"questions[\${index}][answers][1][text]\" 
+                       placeholder=\"Đáp án 2\" required>
+                <input type=\"radio\" name=\"questions[\${index}][correct_answer]\" value=\"1\">
+                <label class=\"ms-1\">Đúng</label>
+            </div>
+
+            <div class=\"d-flex align-items-center mb-2\">
+                <input type=\"text\" class=\"form-control me-2\" 
+                       name=\"questions[\${index}][answers][2][text]\" 
+                       placeholder=\"Đáp án 3\" required>
+                <input type=\"radio\" name=\"questions[\${index}][correct_answer]\" value=\"2\">
+                <label class=\"ms-1\">Đúng</label>
             </div>
         </div>
-        <button type="button" class="btn btn-sm btn-danger remove-question">🗑 Xóa câu hỏi</button>
+
+        <button type=\"button\" class=\"btn btn-sm btn-danger remove-question\">🗑 Xóa câu hỏi</button>
     `;
+
     document.getElementById('questions').appendChild(newQuestion);
 });
 
@@ -73,4 +95,5 @@ document.addEventListener('click', function(event) {
     }
 });
 </script>
+
 @endsection
