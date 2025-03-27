@@ -7,9 +7,14 @@ use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MessageController;
 
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 Route::get('/', function () {
-    return view('welcome');
-});
+    $courses = App\Models\Course::all();
+    return view('welcome', compact('courses'));
+})->name('welcome');
+
 
 Auth::routes();
 //cho mentormentor
