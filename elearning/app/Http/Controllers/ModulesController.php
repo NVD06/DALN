@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Module;
 use App\Models\Course;
-
+use Illuminate\Support\Facades\File;
 class ModulesController extends Controller
 {
     // Hiển thị form tạo module
@@ -69,10 +69,19 @@ class ModulesController extends Controller
 
     public function destroy(Course $course, Module $module)
     {
-        Module::find($module->id)->delete();
-        return redirect()->route('mentor.show', ['course' => $course->id]);
+        if ($module->video_path) {
+            $videoPath = public_path('videos/' . basename($module->video_path));
+            if (File::exists($videoPath)) {
+                File::delete($videoPath);
+            }
+        }
+    
+        $module->delete();
+    
+        return redirect()->route('mentor.show', $course->id)
+            ->with('success', 'Module và video đã được xóa!');
     }
-
+    
     public function update(Request $request, Module $module)
     {
         $request->validate([
@@ -105,5 +114,4 @@ class ModulesController extends Controller
 
         return redirect()->route('mentor.show', $module->course_id)->with('success', 'Module đã được cập nhật!');
     }
-    
 }
