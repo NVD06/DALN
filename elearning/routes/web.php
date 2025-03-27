@@ -6,7 +6,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MessageController;
-
+use App\Http\Controllers\Auth\LoginController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
@@ -69,3 +69,5 @@ Route::put('/tests/{test}', [TestController::class, 'update'])->name('tests.upda
 Route::post('/courses/{course}/test/{test}/submit', [TestController::class, 'submit'])
     ->name('courses.test.submit');
 
+
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
